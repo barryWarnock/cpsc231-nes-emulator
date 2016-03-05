@@ -33,7 +33,8 @@ public class CPU_6502 {
     protected boolean C, Z, I, B, V;
     
     public void reset() {
-        X = Y = A = S= 0;
+        X = Y = A = 0;
+        S = 0xFF;
         PC = (mem.read(0xFFFD)*256)+mem.read(0xFFFC); //set PC to reset vector
         
         C = Z = I = B = V = false;
@@ -73,6 +74,24 @@ public class CPU_6502 {
             default:
                 //log unimplemented op-code
         }
+    }
+    
+    /**
+     * used to push a value onto the stack, note that this is a utility 
+     * function and not an actual instruction
+     * @param value the value to push onto the stack
+     */
+    public void push(short value) {
+        mem.write(S--, value);
+    }
+    
+    /**
+     * used to pop a value from the stack, note that this is a utility 
+     * function and not an actual instruction
+     * @return 
+     */
+    public short pop() {
+        return mem.read(S++);
     }
     
     /**

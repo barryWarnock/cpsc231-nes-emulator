@@ -36,7 +36,7 @@ public class CPU_6502 {
         X = Y = A = 0;
         S = 0xFF;
         PC = (mem.read(0xFFFD)*256)+mem.read(0xFFFC); //set PC to reset vector
-        
+        /* shouldn't we reset the memory too?*/
         C = Z = I = B = V = false;
     }
     

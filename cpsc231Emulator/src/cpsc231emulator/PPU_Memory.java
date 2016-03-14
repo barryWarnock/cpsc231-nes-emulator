@@ -7,7 +7,7 @@ package cpsc231emulator;
 public class PPU_Memory implements Memory{
     protected short[] memArray;
     
-    public CPU_Memory() {
+    public PPU_Memory() {
         memArray = new short[0x4000];
     }
     

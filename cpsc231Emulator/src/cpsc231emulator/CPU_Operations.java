@@ -11,7 +11,7 @@ public class CPU_Operations {
 	 * 
 	 *
 	 */
-	public static void perform(String code) {
+	public static void perform(int code) {
 		switch(code) {
 			/* This first set of instructions is branches.
 			 *
@@ -51,7 +51,7 @@ public class CPU_Operations {
 				Log.debug("NOP was executed. " + code);
 				break;
 			default:
-				Log.warn("Default case was hit! " + code)
+				Log.warn("Default case was hit! " + code);
 		}
 	}
 }

@@ -2,7 +2,6 @@ package cpsc231emulator;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 
 /**
  * a collection of hardware component classes
@@ -35,12 +34,14 @@ public class NES {
             int flag10     = in.read();
             in.skip(5);
 
-            for (int i = 0; i < prgRomSize * 1024; i++) {
-                //mem.write(0x8000+i, (short)in.read());
-                int val = in.read();
-                System.out.println(Integer.toHexString(val));
-                Thread.sleep(5000);
+            for (int i = 0; i < prgRomSize * 1024 * 16; i++) {
+                mem.write(0x8000 + i, (short) in.read());
             }
+            for (int i = 0; i < chrRomSize * 1024 * 8; i++) {
+                in.read();
+            }
+
+
         } catch (Exception e) {
             e.printStackTrace();
             return false;

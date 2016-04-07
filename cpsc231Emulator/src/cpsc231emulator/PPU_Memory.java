@@ -26,7 +26,7 @@ public class PPU_Memory implements Memory {
      * @inheritDoc
      * magic number time!
      * base    size    purpose
-     * $0000  $1000   Pattern Table 0
+     * $0000   $1000   Pattern Table 0
      * $1000   $1000   Pattern Table 1
      * $2000   $3C0    Name Table 0
      * $23C0   $40 Attribute Table 0

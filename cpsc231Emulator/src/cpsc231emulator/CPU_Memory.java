@@ -36,7 +36,7 @@ public class CPU_Memory implements Memory{
      * $4020   $1FDF   Cartridge Expansion ROM
      * $6000   $2000   SRAM
      * $8000   $4000   PRG-ROM
-     * $C000   $4000   PRG-ROM
+     * $C000   $4000   PRG-RAM
      */
     public void write(int address, short value) {
 

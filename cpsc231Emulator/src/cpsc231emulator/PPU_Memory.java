@@ -4,9 +4,10 @@ package cpsc231emulator;
  * an implementation of the NES's memory described at https://en.wikibooks.org/wiki/NES_Programming/Memory_Map
  * @author bolster
  */
-public class PPU_Memory implements Memory{
+public class PPU_Memory implements Memory {
+
     protected short[] memArray;
-    
+
     public PPU_Memory() {
         memArray = new short[0x4000];
     }

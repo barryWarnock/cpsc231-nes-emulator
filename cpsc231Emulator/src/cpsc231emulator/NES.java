@@ -38,11 +38,11 @@ public class NES {
             for (int i = 0; i < prgRomSize * 1024; i++) {
                 //mem.write(0x8000+i, (short)in.read());
                 int val = in.read();
-                System.out.println(val);
-                if (val != (short) val) System.out.println("NO!");
-                Thread.sleep(500);
+                System.out.println(Integer.toHexString(val));
+                Thread.sleep(5000);
             }
         } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
         return true;

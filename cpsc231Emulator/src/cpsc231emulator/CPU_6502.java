@@ -73,6 +73,8 @@ public class CPU_6502 {
                 return 7;
             case 0xA0:
                 return 2;
+            case 0x61:
+                return 6;
             default:
                 System.out.println("Unimplemented OP: "+Integer.toHexString(mem.read(PC)));
                 try {
@@ -99,7 +101,8 @@ public class CPU_6502 {
                 PC++;
                 break;
             case 0xAD:
-                A = load_value_set_flags(PC+1, (byte)(sBit | zBit));
+                A = mem.read(PC+1);
+                set_flags(A, (byte)(sBit | zBit));
                 PC += 3;
                 break;
             case 0x10:
@@ -107,8 +110,15 @@ public class CPU_6502 {
                 PC += 2;
                 break;
             case 0xA0:
-                Y = load_value_set_flags(PC+1, (byte)(sBit | zBit));
+                Y = mem.read(PC+1);
+                set_flags(Y, (byte)(sBit | zBit));
                 PC+=2;
+                break;
+            case 0x61: //Add with carry indirect X
+                A += mem.read(PC+1 + X);
+                set_flags(X, (byte)(sBit | cBit | vBit | zBit));
+                PC += 6;
+                break;
             case 0x00:
                 PC++;
             default:
@@ -116,11 +126,11 @@ public class CPU_6502 {
         }
     }
 
-    protected short load_value_set_flags(int address, byte flagBits) {
-        short value = mem.read(address);
+    protected void set_flags(short value, byte flagBits) {
         Z = ((flagBits & zBit) > 1) ? (value == 0) : (Z);
         S = ((flagBits & sBit) > 1) ? (value < 0) : (S);
-        return value;
+        V = ((flagBits & vBit) > 1) ? ((value & 0b10000000) > 1) : (V); //this needs work
+        C = ((flagBits & cBit) > 1) ? (value > 0xFF) : (C); //this needs work
     }
 
     protected void branch(boolean flag, boolean value) {
@@ -149,15 +159,5 @@ public class CPU_6502 {
      */
     public short pop() {
         return mem.read(Stack++);
-    }
-    
-    /**
-     * BRK causes a non-maskable interrupt and increments the program counter by 
-     * one. Therefore an RTI will go to the address of the BRK +2 so that BRK may 
-     * be used to replace a two-byte instruction for debugging and the subsequent 
-     * RTI will be correct.
-     */
-    protected void op_00() {
-        PC++;
     }
 }

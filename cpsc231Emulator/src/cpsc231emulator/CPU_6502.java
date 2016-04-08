@@ -68,13 +68,15 @@ public class CPU_6502 {
             case 0xAD:
                 return 4;
             case 0x10:
-                return 2;
+                return 2;//+
             case 0x00:
                 return 7;
             case 0xA0:
                 return 2;
             case 0x61:
                 return 6;
+            case 0x21:
+                return 6;//+
             default:
                 System.out.println("Unimplemented OP: "+Integer.toHexString(mem.read(PC)));
                 try {
@@ -101,7 +103,7 @@ public class CPU_6502 {
                 PC++;
                 break;
             case 0xAD:
-                A = mem.read(PC+1);
+                A = mem.read_word(PC+1);
                 set_flags(A, (byte)(sBit | zBit));
                 PC += 3;
                 break;
@@ -115,31 +117,47 @@ public class CPU_6502 {
                 PC+=2;
                 break;
             case 0x61: //Add with carry indirect X
+                int temp = A;
+                A += (C) ? (1) : (0);
                 A += mem.read(PC+1 + X);
+                V = temp >> 7 != A >> 7;
+                if (A > 0xFF) {
+                    A = (short)(A ^ (0x100));
+                    C = true;
+                }
+                else {
+                    C = false;
+                }
                 set_flags(X, (byte)(sBit | cBit | vBit | zBit));
                 PC += 6;
                 break;
             case 0x00:
                 PC++;
+                break;
+            case 0x21:
+                A = (short)(A & mem.read(PC+1 + X));
+                set_flags(A, (byte)(sBit | zBit));
+                PC += 2;
             default:
-
+                break;
         }
+        System.out.println("PC: "+Integer.toHexString(PC));
     }
 
     protected void set_flags(short value, byte flagBits) {
         Z = ((flagBits & zBit) > 1) ? (value == 0) : (Z);
         S = ((flagBits & sBit) > 1) ? (value < 0) : (S);
-        V = ((flagBits & vBit) > 1) ? ((value & 0b10000000) > 1) : (V); //this needs work
-        C = ((flagBits & cBit) > 1) ? (value > 0xFF) : (C); //this needs work
     }
 
     protected void branch(boolean flag, boolean value) {
         if (flag == value) {
             short offset = mem.read(PC + 1);
-            if((offset & 0x80) == 0x80)
-                PC += (offset-0x80);
-            else
+            if((offset & 0x80) == 0x80) {
+                PC += (offset - 0x100);
+            }
+            else {
                 PC += offset;
+            }
         }
     }
 

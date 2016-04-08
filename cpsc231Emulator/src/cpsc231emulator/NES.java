@@ -11,10 +11,17 @@ public class NES {
     
     protected CPU_6502 cpu;
     
-    public NES() {
+    public NES() {}
+
+    public void init() {
         mem = new CPU_Memory();
+        mem.listen(0x2002, 0x2002, (meta, mem) -> {
+            if ((meta.value & 0x80) > 0) {
+                mem.write(0x2002, (short)(meta.value ^ 0x80));
+            }
+        });
     }
-    
+
     /**
      * parses a INES .nes file and places the contents into mem
      * @param filePath the path of the nis file

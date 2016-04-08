@@ -1,5 +1,8 @@
 package cpsc231emulator;
 
+import java.util.ArrayList;
+import java.util.function.BiConsumer;
+
 /**
  * an implementation of the NES's memory described at https://en.wikibooks.org/wiki/NES_Programming/Memory_Map
  * @author bolster
@@ -7,6 +10,8 @@ package cpsc231emulator;
 public class PPU_Memory implements Memory {
 
     protected short[] memArray;
+    protected ArrayList<Listener> readListeners = new ArrayList<>();
+    protected ArrayList<Listener> writeListeners = new ArrayList<>();
 
     public PPU_Memory() {
         memArray = new short[0x4000];
@@ -17,7 +22,16 @@ public class PPU_Memory implements Memory {
      * @inheritDoc
      */
     public short read(int address) {
-        return memArray[address];
+        short value = memArray[address];
+        for (Listener listener : readListeners) {
+            if (listener.min <= address && address <= listener.max) {
+                memoryLocation memLocation = new memoryLocation();
+                memLocation.address = address;
+                memLocation.value = value;
+                listener.lambda.accept(memLocation, this);
+            }
+        }
+        return value;
         //TODO input validation
     }
 
@@ -76,5 +90,14 @@ public class PPU_Memory implements Memory {
     public short read_word(int address) {
         return 0;
         //TODO
+    }
+
+    @Override
+    public void listen(int min, int max, BiConsumer<memoryLocation, Memory> lambda) {
+        Listener listener = new Listener();
+        listener.min = min;
+        listener.max = max;
+        listener.lambda = lambda;
+        readListeners.add(listener);
     }
 }

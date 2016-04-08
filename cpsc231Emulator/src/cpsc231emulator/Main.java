@@ -12,6 +12,7 @@ package cpsc231emulator;
 public class Main {
     public static void main(String[] args) {
         NES nes = new NES();
+        nes.init();
         nes.load_rom("rom.nes");
         nes.start();
         System.out.println("done!");

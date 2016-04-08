@@ -103,7 +103,8 @@ public class CPU_6502 {
                 PC++;
                 break;
             case 0xAD:
-                A = mem.read_word(PC+1);
+                int address = mem.read_word(PC+1);
+                A = mem.read(address);
                 set_flags(A, (byte)(sBit | zBit));
                 PC += 3;
                 break;

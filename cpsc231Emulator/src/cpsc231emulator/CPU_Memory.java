@@ -1,11 +1,15 @@
 package cpsc231emulator;
 
+import java.util.ArrayList;
+import java.util.function.BiConsumer;
+
 /**
  * an implementation of the NES's memory described at https://en.wikibooks.org/wiki/NES_Programming/Memory_Map
  * @author warnock
  */
 public class CPU_Memory implements Memory{
     protected short[] memArray;
+    protected ArrayList<Listener> readListeners = new ArrayList<>();
     
     public CPU_Memory() {
         memArray = new short[0x10000];
@@ -16,7 +20,16 @@ public class CPU_Memory implements Memory{
      * @inheritDoc
      */
     public short read(int address) {
-        return memArray[address];
+        short value = memArray[address];
+        for (Listener listener : readListeners) {
+            if (listener.min <= address && address <= listener.max) {
+                memoryLocation memLocation = new memoryLocation();
+                memLocation.address = address;
+                memLocation.value = value;
+                listener.lambda.accept(memLocation, this);
+            }
+        }
+        return value;
         //TODO input validation
     }
 
@@ -25,6 +38,15 @@ public class CPU_Memory implements Memory{
         short temp = (short) (memArray[++address] << 8);
         temp += memArray[--address];
         return temp;
+    }
+
+    @Override
+    public void listen(int min, int max, BiConsumer<memoryLocation, Memory> lambda) {
+        Listener listener = new Listener();
+        listener.min = min;
+        listener.max = max;
+        listener.lambda = lambda;
+        readListeners.add(listener);
     }
 
     @Override

@@ -97,9 +97,7 @@ public class CPU_6502 {
                 S = A < 0;
                 break;
             case 0x10:
-                if (!S) {
-                    PC += mem.read(PC + 1);
-                }
+                branch(S, false);
                 PC += 2;
                 break;
             case 0x00:
@@ -108,7 +106,17 @@ public class CPU_6502 {
                 //log unimplemented op-code
         }
     }
-    
+
+    protected void branch(boolean flag, boolean value) {
+        if (flag == value) {
+            short offset = mem.read(PC + 1);
+            if((offset & 0x80) == 0x80)
+                PC += (offset-0x80);
+            else
+                PC += offset;
+        }
+    }
+
     /**
      * used to push a value onto the stack, note that this is a utility 
      * function and not an actual instruction

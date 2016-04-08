@@ -29,8 +29,16 @@ public class CPU_6502 {
     * D decimal mode (not implemented)
     * B break command
     * V overflow
+    * S sign (negative)
     */
     protected boolean C, Z, I, B, V, D, S;
+    protected byte cBit = 0b00000001;
+    protected byte zBit = 0b00000010;
+    protected byte iBit = 0b00000100;
+    protected byte bBit = 0b00001000;
+    protected byte vBit = 0b00010000;
+    protected byte dBit = 0b00100000;
+    protected byte sBit = 0b01000000;
     
     public void reset() {
         X = Y = A = 0;
@@ -63,6 +71,8 @@ public class CPU_6502 {
                 return 2;
             case 0x00:
                 return 7;
+            case 0xA0:
+                return 2;
             default:
                 System.out.println("Unimplemented OP: "+Integer.toHexString(mem.read(PC)));
                 try {
@@ -89,22 +99,28 @@ public class CPU_6502 {
                 PC++;
                 break;
             case 0xAD:
-                A = mem.read_word(PC + 1);
+                A = load_value_set_flags(PC+1, (byte)(sBit | zBit));
                 PC += 3;
-                if (A == 0) {
-                    Z = true;
-                }
-                S = A < 0;
                 break;
             case 0x10:
                 branch(S, false);
                 PC += 2;
                 break;
+            case 0xA0:
+                Y = load_value_set_flags(PC+1, (byte)(sBit | zBit));
+                PC+=2;
             case 0x00:
                 PC++;
             default:
-                //log unimplemented op-code
+
         }
+    }
+
+    protected short load_value_set_flags(int address, byte flagBits) {
+        short value = mem.read(address);
+        Z = ((flagBits & zBit) > 1) ? (value == 0) : (Z);
+        S = ((flagBits & sBit) > 1) ? (value < 0) : (S);
+        return value;
     }
 
     protected void branch(boolean flag, boolean value) {

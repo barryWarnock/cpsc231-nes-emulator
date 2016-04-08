@@ -71,4 +71,10 @@ public class PPU_Memory implements Memory {
             }
         }
     }
+
+    @Override
+    public short read_word(int address) {
+        return 0;
+        //TODO
+    }
 }

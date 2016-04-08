@@ -20,4 +20,6 @@ public interface Memory {
      * @param value the value to write at address
      */
     public void write(int address, short value);
+
+    public short read_word(int address);
 }

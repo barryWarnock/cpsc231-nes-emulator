@@ -56,6 +56,7 @@ public class NES {
         cpu = new CPU_6502(mem);
         while (true) {
             cpu.fetch();
+            cpu.execute();
         }
     }
 }

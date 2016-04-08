@@ -21,6 +21,13 @@ public class CPU_Memory implements Memory{
     }
 
     @Override
+    public short read_word(int address) {
+        short temp = (short) (memArray[++address] << 8);
+        temp += memArray[--address];
+        return temp;
+    }
+
+    @Override
     /**
      * @inheritDoc
      * @author bolster

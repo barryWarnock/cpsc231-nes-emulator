@@ -16,10 +16,10 @@ public class CPU_6502 {
     /*
     * define the registers
     * X,Y 8 bit index registers
-    * S stack pointer
+    * Stack stack pointer
     * PC program counter
     */
-    protected short X, Y, A, S;
+    protected short X, Y, A, Stack;
     protected int PC;
     /*
     * define the flags
@@ -30,14 +30,14 @@ public class CPU_6502 {
     * B break command
     * V overflow
     */
-    protected boolean C, Z, I, B, V;
+    protected boolean C, Z, I, B, V, D, S;
     
     public void reset() {
         X = Y = A = 0;
-        S = 0xFF;
+        Stack = 0xFF;
         PC = (mem.read(0xFFFD)*256)+mem.read(0xFFFC); //set PC to reset vector
         /* shouldn't we reset the memory too?*/
-        C = Z = I = B = V = false;
+        C = Z = I = B = V = D = S = false;
     }
     
     public CPU_6502(Memory newMem) {
@@ -53,10 +53,16 @@ public class CPU_6502 {
      */
     public byte fetch() {
         switch (mem.read(PC)) {
+            case 0xD8:
+                return 2;
+            case 0x78:
+                return 2;
+            case 0xAD:
+                return 4;
+            case 0x10:
+                return 2;
             case 0x00:
-                return 0;
-            case 0x01:
-                return 6;
+                return 7;
             default:
                 System.out.println("Unimplemented OP: "+Integer.toHexString(mem.read(PC)));
                 try {
@@ -74,9 +80,30 @@ public class CPU_6502 {
      */
     public void execute() {
         switch (mem.read(PC)) {
-            case 0x00:
-                op_00();
+            case 0xd8:
+                D = false;
+                PC++;
                 break;
+            case 0x78:
+                I = true;
+                PC++;
+                break;
+            case 0xAD:
+                A = mem.read_word(PC + 1);
+                PC += 3;
+                if (A == 0) {
+                    Z = true;
+                }
+                S = A < 0;
+                break;
+            case 0x10:
+                if (!S) {
+                    PC += mem.read(PC + 1);
+                }
+                PC += 2;
+                break;
+            case 0x00:
+                PC++;
             default:
                 //log unimplemented op-code
         }
@@ -88,7 +115,7 @@ public class CPU_6502 {
      * @param value the value to push onto the stack
      */
     public void push(short value) {
-        mem.write(S--, value);
+        mem.write(Stack--, value);
     }
     
     /**
@@ -97,7 +124,7 @@ public class CPU_6502 {
      * @return 
      */
     public short pop() {
-        return mem.read(S++);
+        return mem.read(Stack++);
     }
     
     /**

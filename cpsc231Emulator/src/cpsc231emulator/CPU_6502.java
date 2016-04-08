@@ -58,6 +58,12 @@ public class CPU_6502 {
             case 0x01:
                 return 6;
             default:
+                System.out.println("Unimplemented OP: "+Integer.toHexString(mem.read(PC)));
+                try {
+                    Thread.sleep(10000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 return -1;
         } //TODO write a script to generate the cases for all opcodes (unless someone wants to manually copy the 150+ permutations)
         //this should probably actually end up in a config file that gets loaded into a map but we can talk about that later

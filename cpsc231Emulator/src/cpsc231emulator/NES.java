@@ -13,7 +13,6 @@ public class NES {
     
     public NES() {
         mem = new CPU_Memory();
-        cpu = new CPU_6502(mem);
     }
     
     /**
@@ -51,5 +50,12 @@ public class NES {
             return false;
         }
         return true;
+    }
+
+    public void start() {
+        cpu = new CPU_6502(mem);
+        while (true) {
+            cpu.fetch();
+        }
     }
 }

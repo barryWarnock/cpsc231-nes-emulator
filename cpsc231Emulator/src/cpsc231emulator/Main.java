@@ -13,6 +13,7 @@ public class Main {
     public static void main(String[] args) {
         NES nes = new NES();
         nes.load_rom("rom.nes");
+        nes.start();
         System.out.println("done!");
     }
 }

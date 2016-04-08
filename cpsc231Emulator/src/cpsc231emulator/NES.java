@@ -35,7 +35,11 @@ public class NES {
             in.skip(5);
 
             for (int i = 0; i < prgRomSize * 1024 * 16; i++) {
-                mem.write(0x8000 + i, (short) in.read());
+                short val = (short) in.read();
+                if (prgRomSize == 1) {
+                    mem.write(0x8000 + i + 0x4000, val);
+                }
+                mem.write(0x8000 + i, val);
             }
             for (int i = 0; i < chrRomSize * 1024 * 8; i++) {
                 in.read();

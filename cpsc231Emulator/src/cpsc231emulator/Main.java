@@ -13,8 +13,8 @@ public class Main {
     public static void main(String[] args) {
         Device device = new Device();
         device.init();
-        device.load_rom("Rush_Hour.c8");
-        device.start();
-        System.out.println("done!");
+        if (device.load_rom("Rush_Hour.c8")) {
+            device.start();
+        }
     }
 }

@@ -11,10 +11,10 @@ package cpsc231emulator;
  */
 public class Main {
     public static void main(String[] args) {
-        NES nes = new NES();
-        nes.init();
-        nes.load_rom("rom.nes");
-        nes.start();
+        Device device = new Device();
+        device.init();
+        device.load_rom("Rush_Hour.c8");
+        device.start();
         System.out.println("done!");
     }
 }

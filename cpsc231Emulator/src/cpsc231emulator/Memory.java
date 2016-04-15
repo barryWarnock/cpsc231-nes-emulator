@@ -1,7 +1,5 @@
 package cpsc231emulator;
 
-import java.util.function.BiConsumer;
-
 /**
  * the memory interface gives us a way to access the underlying
  * array representing our memory in a way that reflects the
@@ -23,17 +21,5 @@ public interface Memory {
      */
     public void write(int address, short value);
 
-    public short read_word(int address);
-
-    public void listen(int min, int max, BiConsumer<memoryLocation, Memory> lambda);
-}
-
-class memoryLocation {
-    public int address;
-    public short value;
-}
-
-class Listener {
-    public int min, max;
-    BiConsumer<memoryLocation, Memory> lambda;
+    public int read_word(int address);
 }

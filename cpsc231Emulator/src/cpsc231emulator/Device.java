@@ -44,12 +44,13 @@ public class Device {
         long lastTick = System.currentTimeMillis();
         while (true) {
             if (System.currentTimeMillis() - lastTick > (1000/60)) {
+                cpu.step_timers();
                 cpu.execute();
                 if (cpu.screenChange) {
                     boolean screen[][] = cpu.screen;
                     for (int y = 0; y < screen.length; y++) {
                         for (int x = 0; x < screen[0].length; x++) {
-                            char symbol = (screen[y][x]) ? ('*') : ('#');
+                            char symbol = (screen[y][x]) ? ('#') : (' ');
                             System.out.print(symbol);
                         }
                         System.out.print('\n');

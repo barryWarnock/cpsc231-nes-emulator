@@ -52,7 +52,19 @@ public class Chip_8 {
         mem = newMem;
         reset();
     }
-    
+
+    public void step_timers() {
+        if (delayTimer > 0) {
+            delayTimer--;
+        }
+        if (soundTimer > 0) {
+            soundTimer--;
+            if (soundTimer == 0) {
+                System.out.println("\007");
+            }
+        }
+    }
+
     /**
      * executes the next operation and increments the PC
      */
@@ -76,7 +88,7 @@ public class Chip_8 {
             if (registers[x] == (OPCODE & 0x00FF)) {
                 PC+=2;
             }
-        } else if (OPCODE >> 12 == 0x4000) { //4xkk
+        } else if (OPCODE >> 12 == 0x4) { //4xkk
             int x = (OPCODE & 0x0F00) >> 8;
             if (registers[x] != (OPCODE & 0x00FF)) {
                 PC+=2;
@@ -93,7 +105,7 @@ public class Chip_8 {
         } else if (OPCODE >> 12 == 0x7) { //7xkk
             int x = ((OPCODE & 0x0F00) >> 8);
             registers[x] += (short)(OPCODE & 0x00FF);
-            registers[x] = (byte)registers[x];
+            registers[x] = (short)(0xff & registers[x]);
         } else if ((OPCODE >> 12 == 0x8) && ((OPCODE & 0x000F) == 0x0)) { //8xy0
             int x = ((OPCODE & 0x0F00) >> 8);
             int y = ((OPCODE & 0x00F0) >> 4);
@@ -271,6 +283,6 @@ public class Chip_8 {
      * @return 
      */
     public int pop() {
-        return stack[SP--];
+        return stack[--SP];
     }
 }

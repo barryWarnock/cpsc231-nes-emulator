@@ -14,12 +14,16 @@ import java.util.Random;
  */
 public class Chip_8 {
     Random rand = new Random();
-    InputManager input = new InputManager();
+    InputManager input = InputManager.getInstance();
     //top row is 5-8
-    int[] keymap = {53, 54, 55, 56,
+    int[] keymap = {(int)'B', (int)'5', (int)'6', (int)'7',
+                    (int)'T', (int)'Y', (int)'U', (int)'G',
+                    (int)'H', (int)'J', (int)'V', (int)'N',
+                    (int)'8', (int)'I', (int)'K', (int)'M'};
+            /*{53, 54, 55, 56,
             116, 121, 117, 105,
             103, 104, 106, 107,
-            118, 98, 110, 109};
+            118, 98, 110, 109};*/
 
 
     //a reference to the NES's memory
@@ -70,7 +74,7 @@ public class Chip_8 {
      */
     public void execute() {
         int OPCODE = mem.read_word(PC);
-        System.out.println(Integer.toHexString(PC)+": "+Integer.toHexString(OPCODE));
+        //System.out.println(Integer.toHexString(PC)+": "+Integer.toHexString(OPCODE));
         PC+=2;
         if (OPCODE == 0) {}
         else if (OPCODE == 0x00E0) { //0x00E0
@@ -167,11 +171,13 @@ public class Chip_8 {
             int address = I;
             int x = ((OPCODE & 0x0F00) >> 8);
             int y = ((OPCODE & 0x00F0) >> 4);
+            x = registers[x];
+            y = registers[y];
             int n = (OPCODE & 0x000F);
             short overwrite = 0;
 
             for (int i = 0; i < n; i++) {
-                short bitmask = mem.read(address + n);
+                short bitmask = mem.read(address + i);
                 String bits = Integer.toBinaryString(bitmask);
                 String leftpad = "";
                 for (int l = bits.length(); l < 8; l++) {
@@ -193,18 +199,16 @@ public class Chip_8 {
             registers[0xF] = overwrite;
             screenChange = true;
         } else if (((OPCODE >> 12 == 0xE) && ((OPCODE & 0x00FF) == 0x9E))) { //ex9e
-            //top row is 5-8
-            int[] keymap = {53, 54, 55, 56,
-                            116, 121, 117, 105,
-                            103, 104, 106, 107,
-                            118, 98, 110, 109};
-
             int key = ((OPCODE & 0x0F00) >> 8);
+            key = registers[key];
+            System.out.println(Integer.toHexString(key)+": "+Integer.toHexString((char)keymap[key]));
             if (input.isKeyDown(keymap[key])) {
                 PC+=2;
             }
         } else if (((OPCODE >> 12 == 0xE) && ((OPCODE & 0x00FF) == 0xA1))) { //exA1
             int key = ((OPCODE & 0x0F00) >> 8);
+            key = registers[key];
+
             if (input.isKeyUp(keymap[key])) {
                 PC+=2;
             }
@@ -236,7 +240,7 @@ public class Chip_8 {
         } else if (((OPCODE >> 12 == 0xF) && ((OPCODE & 0x00FF) == 0x029))) { //fx29
             int x = ((OPCODE & 0x0F00) >> 8);
             int val = registers[x];
-            I = ((val-1) * 8);
+            I = ((val) * 8);
         } else if (((OPCODE >> 12 == 0xF) && ((OPCODE & 0x00FF) == 0x033))) { //fx33
             int x = ((OPCODE & 0x0F00) >> 8);
             String bcdString = Integer.toString(registers[x]);

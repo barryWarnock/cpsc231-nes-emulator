@@ -13,7 +13,13 @@ public class Main {
     public static void main(String[] args) {
         Device device = new Device();
         device.init();
-        if (device.load_rom("Rush_Hour.c8")) {
+        String filename = "";
+        if (args.length > 0) {
+            filename = args[0];
+        } else {
+            filename = "c8demo.ch8";
+        }
+        if (device.load_rom(filename)) {
             device.start();
         }
     }
